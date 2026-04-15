@@ -1,0 +1,57 @@
+# --- Python ---
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# --- Środowiska wirtualne ---
+venv/
+.venv/
+env/
+.env/
+ENV/
+env.bak/
+venv.bak/
+
+# --- Robot Framework ---
+# Wyniki testów
+output.xml
+log.html
+report.html
+# Wyniki wykonania równoległego (Pabot)
+pabot_results/
+# Biblioteka Browser / Playwright
+browser/
+# Zrzuty ekranu z błędami (Selenium/Browser)
+selenium-screenshot-*.png
+browser-screenshot-*.png
+# Logi debugowania
+robot_debug.log
+
+# --- IDE i edytory ---
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# --- Systemowe ---
+.DS_Store
+Thumbs.db
