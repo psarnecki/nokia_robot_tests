@@ -55,3 +55,5 @@ robot_debug.log
 # --- Systemowe ---
 .DS_Store
 Thumbs.db
+
+epc-simulator.tar
