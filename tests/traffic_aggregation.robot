@@ -25,6 +25,41 @@ Traffic Aggregation Math (Consistency of /ues/stats)
     Verify connected UE count is 3
     Verify total Tx traffic is 30000000 bps
 
+Traffic Aggregation Math (Mixed Units)
+    [Documentation]    Uruchamia ruch używając różnych jednostek (Mbps, kbps, bps) i sprawdza, czy symulator poprawnie przelicza je i sumuje do bazowego bps.
+    
+    Reset EPC Simulator
+    
+    Attach UE with ID 1
+    Attach UE with ID 2
+    Attach UE with ID 3
+    
+    # 5 Mbps = 5 000 000 bps
+    Start DL traffic for UE 1 on bearer ${DEFAULT_BEARER} via udp at 5.0 Mbps
+    # 2000 kbps = 2 000 000 bps
+    Start DL traffic for UE 2 on bearer ${DEFAULT_BEARER} via udp at 2000 kbps
+    # 500000 bps = 500 000 bps
+    Start DL traffic for UE 3 on bearer ${DEFAULT_BEARER} via udp at 500000 bps
+    
+    Verify connected UE count is 3
+    # 5 000 000 + 2 000 000 + 500 000 = 7 500 000 bps
+    Verify total Tx traffic is 7500000 bps
+
+Traffic Aggregation Math (Mixed Protocols)
+    [Documentation]    Uruchamia ruch dla różnych urządzeń używając jednocześnie protokołów TCP oraz UDP, weryfikując czy EPC agreguje je prawidłowo.
+    
+    Reset EPC Simulator
+    
+    Attach UE with ID 4
+    Attach UE with ID 5
+    
+    Start DL traffic for UE 4 on bearer ${DEFAULT_BEARER} via tcp at 10.0 Mbps
+    Start DL traffic for UE 5 on bearer ${DEFAULT_BEARER} via udp at 15.0 Mbps
+    
+    Verify connected UE count is 2
+    # 10 Mbps + 15 Mbps = 25 Mbps = 25 000 000 bps
+    Verify total Tx traffic is 25000000 bps
+
 
 *** Keywords ***
 Reset EPC Simulator
@@ -38,13 +73,12 @@ Attach UE with ID ${ue_id}
     ${resp}=           POST On Session    epc_session    /ues    json=${body}
     Status Should Be   200    ${resp}
 
-Start DL traffic for UE ${ue_id} on bearer ${bearer_id_str} via ${protocol} at ${mbps_str} Mbps
+Start DL traffic for UE ${ue_id} on bearer ${bearer_id_str} via ${protocol} at ${speed_str} ${unit}
     [Documentation]    Rozpoczyna transfer danych w kierunku Downlink (DL) dla wskazanego UE i kanału (bearer), przy użyciu określonego protokołu i prędkości.
-    # Convert to numbers for JSON body
     ${numeric_id}=     Convert To Integer    ${ue_id}
     ${bearer_id}=      Convert To Integer    ${bearer_id_str}
-    ${mbps}=           Convert To Number     ${mbps_str}
-    ${body}=           Create Dictionary    protocol=${protocol}    Mbps=${mbps}
+    ${speed}=          Convert To Number     ${speed_str}
+    ${body}=           Create Dictionary    protocol=${protocol}    ${unit}=${speed}
     ${resp}=           POST On Session    epc_session    /ues/${numeric_id}/bearers/${bearer_id}/traffic    json=${body}
     Status Should Be   200    ${resp}
 
