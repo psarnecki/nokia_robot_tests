@@ -22,6 +22,8 @@ Traffic Aggregation Math (Consistency of /ues/stats)
     Start DL traffic for UE 2 on bearer ${DEFAULT_BEARER} via udp at 10.0 Mbps
     Start DL traffic for UE 3 on bearer ${DEFAULT_BEARER} via udp at 15.0 Mbps
     
+    Wait 2s
+
     Verify connected UE count is 3
     Verify total Tx traffic is 30000000 bps
 
@@ -41,6 +43,8 @@ Traffic Aggregation Math (Mixed Units)
     # 500000 bps = 500 000 bps
     Start DL traffic for UE 3 on bearer ${DEFAULT_BEARER} via udp at 500000 bps
     
+    Wait 2s
+
     Verify connected UE count is 3
     # 5 000 000 + 2 000 000 + 500 000 = 7 500 000 bps
     Verify total Tx traffic is 7500000 bps
@@ -56,12 +60,19 @@ Traffic Aggregation Math (Mixed Protocols)
     Start DL traffic for UE 4 on bearer ${DEFAULT_BEARER} via tcp at 10.0 Mbps
     Start DL traffic for UE 5 on bearer ${DEFAULT_BEARER} via udp at 15.0 Mbps
     
+    Wait 2s
+
     Verify connected UE count is 2
     # 10 Mbps + 15 Mbps = 25 Mbps = 25 000 000 bps
     Verify total Tx traffic is 25000000 bps
 
 
 *** Keywords ***
+Wait ${wait_time} 
+    [Documentation]    Zatrzymuje wykonywanie testu na podany czas.
+    Sleep    ${wait_time}
+
+
 Reset EPC Simulator
     Create Session     epc_session    ${BASE_URL}
     POST On Session    epc_session    /reset
