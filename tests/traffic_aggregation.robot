@@ -4,6 +4,8 @@ Library             RequestsLibrary
 Library             Collections
 Library             BuiltIn
 
+Test Setup          Reset EPC Simulator
+
 *** Variables ***
 ${BASE_URL}         http://localhost:8000
 ${DEFAULT_BEARER}   9
@@ -11,9 +13,7 @@ ${DEFAULT_BEARER}   9
 *** Test Cases ***
 Traffic Aggregation Math (Consistency of /ues/stats)
     [Documentation]    Uruchamia ruch na trzech różnych UE i sprawdza statystyki.
-    
-    Reset EPC Simulator
-    
+
     Attach UE with ID 1
     Attach UE with ID 2
     Attach UE with ID 3
@@ -29,9 +29,7 @@ Traffic Aggregation Math (Consistency of /ues/stats)
 
 Traffic Aggregation Math (Mixed Units)
     [Documentation]    Uruchamia ruch używając różnych jednostek (Mbps, kbps, bps) i sprawdza, czy symulator poprawnie przelicza je i sumuje do bazowego bps.
-    
-    Reset EPC Simulator
-    
+
     Attach UE with ID 1
     Attach UE with ID 2
     Attach UE with ID 3
@@ -51,9 +49,7 @@ Traffic Aggregation Math (Mixed Units)
 
 Traffic Aggregation Math (Mixed Protocols)
     [Documentation]    Uruchamia ruch dla różnych urządzeń używając jednocześnie protokołów TCP oraz UDP, weryfikując czy EPC agreguje je prawidłowo.
-    
-    Reset EPC Simulator
-    
+
     Attach UE with ID 4
     Attach UE with ID 5
     
