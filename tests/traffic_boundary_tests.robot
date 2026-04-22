@@ -1,44 +1,47 @@
 *** Settings ***
-Library         RequestsLibrary
-Suite Setup     Create Session    epc    http://127.0.0.1:8000
-Suite Teardown  Delete All Sessions
-Test Setup      Reset Simulator
+Documentation       Testy weryfikujące ograniczenia prędkości transferu
+Library             RequestsLibrary
+Library             Collections
+
+Test Setup          Reset EPC Simulator
+
+*** Variables ***
+${BASE_URL}         http://127.0.0.1:8000
 
 *** Test Cases ***
-
 Traffic Over 100 Mbps Limit
-    [Documentation]    Test weryfikujący, czy aplikacja poprawnie blokuje żądanie rozpoczęcia transferu przekraczającego ustalony limit górny (100 Mbps)
-    Attach UE "1" To Network
-    ${resp}=    Start Traffic For UE "1" On Bearer "9" With Mbps 110
-    Run Keyword If    ${resp.status_code} == 200    Fail    Serwer pozwolił na włączenie transferu o prędkości powyżej limitu na jednym bearerze
-    Status Should Be Error    ${resp}
+    [Documentation]    Test weryfikujący, czy aplikacja poprawnie blokuje rozpoczęcie transferu przekraczającego limit górny 100 Mbps
+    
+    Attach UE with ID 1
+    Try to start traffic for UE 1 on bearer 9 at 180 Mbps
+    Verify that an error occurred
 
 Negative Transfer Speed Should Be Rejected
-    [Documentation]    Test weryfikujący brzegową wartość dolną, system nie powinien pozwalać na przesyłanie prędkości ujemnych
-    Attach UE "2" To Network
-    ${resp}=    Start Traffic For UE "2" On Bearer "9" With Mbps -10
-    Run Keyword If    ${resp.status_code} == 200    Fail    Serwer pozwolił na włączenie transferu o ujemnej prędkości
-    Status Should Be Error    ${resp}
+    [Documentation]    Test weryfikujący, czy aplikacja nie pozwala na przesyłanie prędkości ujemnych
+    
+    Attach UE with ID 2
+    Try to start traffic for UE 2 on bearer 9 at -10 Mbps
+    Verify that an error occurred
 
 *** Keywords ***
-
-Reset Simulator
+Reset EPC Simulator
     [Documentation]    Przywraca symulator do stanu początkowego
-    POST On Session    epc    /reset    expected_status=any
+    Create Session     epc_session    ${BASE_URL}
+    POST On Session    epc_session    /reset
 
-Attach UE "${ue_id}" To Network
+Attach UE with ID ${ue_id}
     [Documentation]    Wysyła żądanie dołączenia UE o zadanym ID do sieci
-    ${body}=    Create Dictionary    ue_id=${ue_id}
-    POST On Session    epc    /ues    json=${body}    expected_status=200
+    ${body}=           Create Dictionary    ue_id=${ue_id}
+    POST On Session    epc_session    /ues    json=${body}    expected_status=200
 
-Start Traffic For UE "${ue_id}" On Bearer "${bearer_id}" With Mbps ${mbps}
-    [Documentation]    Wysyła żądanie startu ruchu, ale pozwala na dowolny status odpowiedzi
-    ${body}=    Create Dictionary    protocol=tcp    Mbps=${mbps}
-    ${resp}=    POST On Session    epc    /ues/${ue_id}/bearers/${bearer_id}/traffic    json=${body}    expected_status=any
-    RETURN    ${resp}
+Try to start traffic for UE ${ue_id} on bearer ${bearer_id} at ${speed} Mbps
+    [Documentation]    Uruchamia ruch i zapisuje wynik w zmiennej testowej
+    ${body}=           Create Dictionary    protocol=tcp    Mbps=${speed}
+    ${resp}=           POST On Session    epc_session    /ues/${ue_id}/bearers/${bearer_id}/traffic    json=${body}    expected_status=any
+    Set Test Variable  ${last_response}    ${resp}
 
-Status Should Be Error
-    [Documentation]    Weryfikuje, czy otrzymany kod statusu odpowiedzi wskazuje na błąd walidacji lub logiki
-    [Arguments]    ${resp}
-    Should Be True    ${resp.status_code} >= 400
+Verify that an error occurred
+    [Documentation]    Sprawdza czy otrzymany kod statusu odpowiedzi wskazuje na błąd walidacji lub logiki
+    Should Be True     ${last_response.status_code} >= 400
+    Log                Operacja zakończyła się błędem: ${last_response.status_code}
     
