@@ -24,7 +24,7 @@ DELETE Idempotency — Second Delete Should Not Return 500
     ...    msg=Błąd! Drugie DELETE zwróciło 500 — aplikacja nie jest idempotentna!
     Log    Drugie DELETE zwróciło: ${second_resp.status_code}    level=WARN
 
-    *** Keywords ***
+*** Keywords ***
 Reset Simulator
     [Documentation]    Przywraca symulator do stanu początkowego
     POST On Session    epc    /reset
