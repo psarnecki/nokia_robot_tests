@@ -9,7 +9,7 @@ Test Setup          Reset EPC Simulator
 ${BASE_URL}         http://localhost:8000
 
 *** Test Cases ***
-Ghost Traffic Prevention (Hard UE Detach)
+System should stop traffic and clear stats when UE is hard detached
     [Documentation]    Dołącza UE, dodaje kanał, odpala ruch i nagle odłącza całe urządzenie UE. 
     ...                Weryfikuje, czy symulator poprawnie ubija procesy w tle, a statystyki spadają do zera.
     
@@ -24,7 +24,7 @@ Ghost Traffic Prevention (Hard UE Detach)
     Verify connected UE count is 0
     Verify total Tx traffic is exactly 0 bps
 
-Ghost Traffic Prevention (Hard Bearer Delete)
+System should stop traffic and clear stats when bearer is deleted
     [Documentation]    Dołącza UE, dodaje kanał i odpala ruch. Tym razem usuwa tylko sam kanał (Bearer), 
     ...                zostawiając urządzenie UE podłączone. Weryfikuje usunięcie ruchu tylko dla tego Bearera.
     
