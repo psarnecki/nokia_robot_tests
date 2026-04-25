@@ -62,6 +62,16 @@ Endpoint should aggregate traffic correctly when mixed protocols and same units 
     # 10 Mbps + 15 Mbps = 25 Mbps = 25 000 000 bps
     Verify total Tx traffic is 25000000 bps
 
+Endpoint should stabilize traffic after initial burst
+    [Documentation]    Weryfikuje, czy po uruchomieniu transferu występuje chwilowy pik ruchu (burst), po którym przepustowość stabilizuje się do zadanego limitu.
+
+    Attach UE with ID 1
+    Start DL traffic for UE 1 on bearer ${DEFAULT_BEARER} via udp at 10.0 Mbps
+    Wait 2s
+    Verify traffic is in burst phase above 10500000 bps
+    
+    Wait 15s
+    Verify total Tx traffic is 10000000 bps
 
 *** Keywords ***
 Wait ${wait_time} 
@@ -99,11 +109,7 @@ Verify connected UE count is ${expected_count}
 Verify total Tx traffic is ${expected_tx} bps
     [Documentation]    Sprawdza całkowity ruch z marginesem błędu +/- 5%.
     
-    Sleep    2s
-    
-    ${stats_resp}=     GET On Session    epc_session    /ues/stats
-    ${stats}=          Set Variable    ${stats_resp.json()}
-    ${actual_tx}=      Set Variable    ${stats['total_tx_bps']}
+    ${actual_tx}=      Get Current Tx Traffic
 
     ${lower_bound}=    Evaluate    int(${expected_tx} * 0.95)
     ${upper_bound}=    Evaluate    int(${expected_tx} * 1.05)
@@ -113,3 +119,19 @@ Verify total Tx traffic is ${expected_tx} bps
     
     Should Be True     ${actual_tx} >= ${lower_bound} and ${actual_tx} <= ${upper_bound}
     ...    msg=Błąd! Oczekiwano ruchu w okolicach ${expected_tx} bps, ale otrzymano ${actual_tx} bps.
+
+Get Current Tx Traffic
+    [Documentation]    Odpytuje API symulatora i zwraca aktualną wartość całkowitego ruchu Tx.
+    ${stats_resp}=     GET On Session    epc_session    /ues/stats
+    Status Should Be   200    ${stats_resp}
+    ${stats}=          Set Variable    ${stats_resp.json()}
+    RETURN             ${stats['total_tx_bps']}
+
+Verify traffic is in burst phase above ${min_burst_tx} bps
+    [Documentation]    Sprawdza, czy ruch w początkowej fazie przekracza zadany limit (udowadnia zjawisko Burst).
+    
+    ${actual_tx}=      Get Current Tx Traffic
+    
+    Log    Ruch w fazie startowej (burst): ${actual_tx} bps
+    Should Be True     ${actual_tx} > ${min_burst_tx}
+    ...    msg=Brak początkowego piku ruchu. Oczekiwano > ${min_burst_tx} bps, ale otrzymano: ${actual_tx} bps.
