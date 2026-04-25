@@ -11,14 +11,14 @@ ${BASE_URL}         http://localhost:8000
 ${DEFAULT_BEARER}   9
 
 *** Test Cases ***
-BOLA Vulnerability Check (Cross-Bearer Deletion)
+System should prevent cross-bearer resource deletion
     [Documentation]    Weryfikuje, czy API prawidłowo waliduje przynależność Bearera do konkretnego UE przy usuwaniu.
     Attach UE with ID 2
     Add bearer 6 to UE 2
     Attach UE with ID 1
     Attempt to delete bearer 6 from UE 1 expecting failure
 
-BOLA Vulnerability Check (Traffic Hijacking)
+System should reject starting traffic on a bearer owned by another UE
     [Documentation]    Atakujący (UE 1) próbuje złośliwie uruchomić ruch na kanale ofiary (Bearer 6 należący do UE 2).
     ...                Weryfikuje, czy system zablokuje próbę "podrzucenia" ruchu do obcego rachunku.
     
@@ -27,7 +27,7 @@ BOLA Vulnerability Check (Traffic Hijacking)
     Attach UE with ID 1
     Attempt to start traffic for UE 1 on bearer 6 expecting failure
 
-BOLA Vulnerability Check (Data Leakage / Spying)
+System should prevent reading traffic stats for a bearer owned by another UE
     [Documentation]    Atakujący (UE 1) próbuje odczytać statystyki prywatnego kanału ofiary (UE 2).
     ...                Weryfikuje odporność na nieautoryzowany podgląd danych (Szpiegowanie).
     
