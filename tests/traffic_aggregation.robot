@@ -11,7 +11,7 @@ ${BASE_URL}         http://localhost:8000
 ${DEFAULT_BEARER}   9
 
 *** Test Cases ***
-Traffic Aggregation Math (Consistency of /ues/stats)
+Endpoint should aggregate traffic correctly in /ues/stats
     [Documentation]    Uruchamia ruch na trzech różnych UE i sprawdza statystyki.
 
     Attach UE with ID 1
@@ -27,7 +27,7 @@ Traffic Aggregation Math (Consistency of /ues/stats)
     Verify connected UE count is 3
     Verify total Tx traffic is 30000000 bps
 
-Traffic Aggregation Math (Mixed Units)
+Endpoint should aggregate traffic correctly when mixed units are used
     [Documentation]    Uruchamia ruch używając różnych jednostek (Mbps, kbps, bps) i sprawdza, czy symulator poprawnie przelicza je i sumuje do bazowego bps.
 
     Attach UE with ID 1
@@ -47,7 +47,7 @@ Traffic Aggregation Math (Mixed Units)
     # 5 000 000 + 2 000 000 + 500 000 = 7 500 000 bps
     Verify total Tx traffic is 7500000 bps
 
-Traffic Aggregation Math (Mixed Protocols)
+Endpoint should aggregate traffic correctly when mixed protocols are used
     [Documentation]    Uruchamia ruch dla różnych urządzeń używając jednocześnie protokołów TCP oraz UDP, weryfikując czy EPC agreguje je prawidłowo.
 
     Attach UE with ID 4
