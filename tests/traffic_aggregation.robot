@@ -11,7 +11,7 @@ ${BASE_URL}         http://localhost:8000
 ${DEFAULT_BEARER}   9
 
 *** Test Cases ***
-Endpoint should aggregate traffic correctly when units are the same
+System should aggregate traffic correctly when units are the same
     [Documentation]    Uruchamia ruch na trzech różnych UE i sprawdza statystyki.
 
     Attach UE with ID 1
@@ -27,7 +27,7 @@ Endpoint should aggregate traffic correctly when units are the same
     Verify connected UE count is 3
     Verify total Tx traffic is 30000000 bps
 
-Endpoint should aggregate traffic correctly when mixed units are used
+System should aggregate traffic correctly when mixed units are used
     [Documentation]    Uruchamia ruch używając różnych jednostek (Mbps, kbps, bps) i sprawdza, czy symulator poprawnie przelicza je i sumuje do bazowego bps.
 
     Attach UE with ID 1
@@ -47,7 +47,7 @@ Endpoint should aggregate traffic correctly when mixed units are used
     # 5 000 000 + 2 000 000 + 500 000 = 7 500 000 bps
     Verify total Tx traffic is 7500000 bps
 
-Endpoint should aggregate traffic correctly when mixed protocols and same units are used
+System should aggregate traffic correctly when mixed protocols and same units are used
     [Documentation]    Uruchamia ruch dla różnych urządzeń używając jednocześnie protokołów TCP oraz UDP, weryfikując czy EPC agreguje je prawidłowo.
 
     Attach UE with ID 4
@@ -62,16 +62,23 @@ Endpoint should aggregate traffic correctly when mixed protocols and same units 
     # 10 Mbps + 15 Mbps = 25 Mbps = 25 000 000 bps
     Verify total Tx traffic is 25000000 bps
 
-Endpoint should stabilize traffic after initial burst
-    [Documentation]    Weryfikuje, czy po uruchomieniu transferu występuje chwilowy pik ruchu (burst), po którym przepustowość stabilizuje się do zadanego limitu.
+System should aggregate and stabilize traffic after initial burst
+    [Documentation]    Weryfikuje, czy podczas agregacji ruchu z wielu urządzeń UE rate-limiter generuje początkowy pik (burst), a następnie stabilizuje łączną przepustowość do prawidłowego poziomu.
 
     Attach UE with ID 1
-    Start DL traffic for UE 1 on bearer ${DEFAULT_BEARER} via udp at 10.0 Mbps
-    Wait 2s
-    Verify traffic is in burst phase above 10500000 bps
+    Attach UE with ID 2
+    Attach UE with ID 3
     
+    # Docelowa agregacja: 5 + 10 + 15 = 30 Mbps (30 000 000 bps)
+    Start DL traffic for UE 1 on bearer ${DEFAULT_BEARER} via udp at 5.0 Mbps
+    Start DL traffic for UE 2 on bearer ${DEFAULT_BEARER} via udp at 10.0 Mbps
+    Start DL traffic for UE 3 on bearer ${DEFAULT_BEARER} via udp at 15.0 Mbps
+    
+    Wait 2s
+    Verify traffic is in burst phase above 31500000 bps
     Wait 15s
-    Verify total Tx traffic is 10000000 bps
+    Verify total Tx traffic is 30000000 bps
+    Set Test Message    Test zaliczony. Udowodniono występowanie piku startowego >31.5 Mbps oraz poprawną agregację do ~30 Mbps po czasie stabilizacji.
 
 *** Keywords ***
 Wait ${wait_time} 
