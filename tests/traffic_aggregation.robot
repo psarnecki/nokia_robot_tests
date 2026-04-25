@@ -11,7 +11,7 @@ ${BASE_URL}         http://localhost:8000
 ${DEFAULT_BEARER}   9
 
 *** Test Cases ***
-Endpoint should aggregate traffic correctly in /ues/stats
+Endpoint should aggregate traffic correctly when units are the same
     [Documentation]    Uruchamia ruch na trzech różnych UE i sprawdza statystyki.
 
     Attach UE with ID 1
@@ -47,7 +47,7 @@ Endpoint should aggregate traffic correctly when mixed units are used
     # 5 000 000 + 2 000 000 + 500 000 = 7 500 000 bps
     Verify total Tx traffic is 7500000 bps
 
-Endpoint should aggregate traffic correctly when mixed protocols are used
+Endpoint should aggregate traffic correctly when mixed protocols and same units are used
     [Documentation]    Uruchamia ruch dla różnych urządzeń używając jednocześnie protokołów TCP oraz UDP, weryfikując czy EPC agreguje je prawidłowo.
 
     Attach UE with ID 4
